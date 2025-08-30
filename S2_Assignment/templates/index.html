@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal & File Upload App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Animal & File Upload Application</h1>
+        
+        <div class="boxes-container">
+            <!-- Animal Selection Box -->
+            <div class="box animal-box">
+                <h2>Select an Animal</h2>
+                <div class="animal-options">
+                    <label class="animal-option">
+                        <input type="radio" name="animal" value="cat">
+                        <span class="checkmark">🐱</span>
+                        Cat
+                    </label>
+                    <label class="animal-option">
+                        <input type="radio" name="animal" value="dog">
+                        <span class="checkmark">🐕</span>
+                        Dog
+                    </label>
+                    <label class="animal-option">
+                        <input type="radio" name="animal" value="elephant">
+                        <span class="checkmark">🐘</span>
+                        Elephant
+                    </label>
+                </div>
+                
+                <div class="animal-display" id="animalDisplay" style="display: none;">
+                    <img id="animalImage" src="" alt="Selected animal">
+                    <p id="animalName"></p>
+                </div>
+            </div>
+
+            <!-- File Upload Box -->
+            <div class="box upload-box">
+                <h2>Upload a File</h2>
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <span class="upload-icon">📁</span>
+                        <p>Drag and drop a file here or click to browse</p>
+                        <input type="file" id="fileInput" accept="*/*" style="display: none;">
+                        <button type="button" class="browse-btn">
+                            Browse Files
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="file-info" id="fileInfo" style="display: none;">
+                    <h3>File Information:</h3>
+                    <div class="info-item">
+                        <strong>Name:</strong> <span id="fileName"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Size:</strong> <span id="fileSize"></span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Type:</strong> <span id="fileType"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
