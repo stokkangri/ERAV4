@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Mean Calculation</title>
+</head>
+<body>
+    <h1>Upload 1 to 5 Images</h1>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label for="images">Choose 1 to 5 images:</label><br><br>
+        <input type="file" name="images" accept="image/*" multiple><br><br>
+        <button type="submit">Upload Images</button>
+    </form>
+
+    {% if uploaded_images %}
+    <h2>Uploaded Images:</h2>
+    <div>
+        {% for img in uploaded_images %}
+            <img src="{{ url_for('static', filename='images/' + img.split('static/images/')[1]) }}" width="200px"><br>
+        {% endfor %}
+    </div>
+
+    {% if mean_image_path %}
+    <h2>Mean Image:</h2>
+    <img src="{{ url_for('static', filename='images/' + mean_image_path.split('static/images/')[1]) }}" width="200px"><br>
+    {% endif %}
+    {% endif %}
+</body>
+</html>
