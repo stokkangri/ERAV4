@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask a Question About the Image</title>
+</head>
+<body>
+    <h1>Upload an Image and Ask a Question</h1>
+    <form action="/" method="POST" enctype="multipart/form-data">
+        <label for="image">Choose an image:</label>
+        <input type="file" name="image" accept="image/*" required><br><br>
+
+        <label for="question">Ask a question about the image:</label>
+        <input type="text" name="question" required size="50" style="width: 400px; height: 30px; font-size: 16px;"><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if answer %}
+        <h2>Answer:</h2>
+        <p>{{ answer }}</p>
+        {% if image_url %}
+            <h2>Uploaded Image:</h2>
+            <img src="{{ image_url }}" width="400"><br>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
