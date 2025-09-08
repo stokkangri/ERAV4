@@ -1,3 +1,5 @@
+Colab Link: https://colab.research.google.com/drive/1doENEEjbPOFUgwL1lbUkaJHTa5JGvl8K?usp=sharing
+
 MNIST Classifier with a Convolutional Neural Network
 This notebook demonstrates a simple Convolutional Neural Network (CNN) for classifying handwritten digits from the MNIST dataset using PyTorch.
 
