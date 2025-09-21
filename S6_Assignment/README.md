@@ -17,7 +17,7 @@
 9. When ready, attempt SESSION 6 -Assignment Solution  
 
 
-## Solution, Step 1 [Notebook](./ERAV3_S7_v1.ipynb)
+## Solution, Step 1 [Notebook](./ERAV4_S6_v1.ipynb)
 ### Target   
 - Create a Setup (dataset, data loader, train/test steps and log plots)  
 - Defining simple model with Convolution block, GAP, dropout and batch normalization.
@@ -31,7 +31,7 @@
 - Model with 6K parameters is able to reach till 99.2% accuracy in 15 epochs.
 - Model is not overfitting as training and test accuracies are closeby.
 
-## Solution, Step 2 [Notebook](./ERAV3_S7_v2.ipynb)
+## Solution, Step 2 [Notebook](./ERAV4_S6_v2.ipynb)
 
 ### Target   
 - Add image augmentation w random rotation and random affine to improve the model performance.
@@ -45,7 +45,7 @@
 - Model with 6K parameters is able to reach till 99.19% accuracy in 15 epochs.
 - Image augmentation doesn't show much improvement. It may be because of presense of dropout which effectively does similar function.
 
-## Solution, Step 3 [Notebook](./ERAV3_S7_v3.ipynb)
+## Solution, Step 3 [Notebook](./ERAV4_S6_v3.ipynb)
 
 ### Target   
 - Study effect of including StepLR rate scheduler.
