@@ -1,4 +1,4 @@
-# ERA V3 Session 7 Assignment
+# ERA V4 Session 6 Assignment
 
 ## Problem Statement
 
@@ -7,19 +7,17 @@
     2. Less than or equal to 15 Epochs
     3. Less than 8000 Parameters
     4. Do this using your modular code. Every model that you make must be there in the model.py file as Model_1, Model_2, etc.
-    5. Once done, train on SageMaker or EC2 
-2. Do this in exactly 3 steps (Excluding SageMaker/EC2 part)
+2. Do this in exactly 3 steps 
 3. Each File must have a "target, result, analysis" TEXT block (either at the start or the end)  
 4. You must convince why have you decided that your target should be what you have decided it to be, and your analysis MUST be correct.  
 5. Evaluation is highly subjective, and if you target anything out of the order, marks will be deducted. 
 6. Explain your 3 steps using these targets, results, and analysis with links to your GitHub files (Colab files moved to GitHub).  
 7. Keep Receptive field calculations handy for each of your models.  
 8. If your GitHub folder structure or file_names are messy, -100.  
-9. When ready, attempt SESSION 7 -Assignment Solution  
+9. When ready, attempt SESSION 6 -Assignment Solution  
 
 
 ## Solution, Step 1 [Notebook](./ERAV3_S7_v1.ipynb)
-
 ### Target   
 - Create a Setup (dataset, data loader, train/test steps and log plots)  
 - Defining simple model with Convolution block, GAP, dropout and batch normalization.
