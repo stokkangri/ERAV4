@@ -146,23 +146,30 @@ def summary_with_rf(model, input_size, batch_size=-1, device="cuda", dtypes=None
             # Check if it's global pooling (output size is 1x1)
             if (isinstance(output_size, int) and output_size == 1) or \
                (isinstance(output_size, (tuple, list)) and output_size[0] == 1 and output_size[1] == 1):
-                # Global Average Pooling - RF becomes the entire feature map
-                # The RF now covers the entire spatial dimension
-                global_rf = f"GLOBAL({current_size}x{current_size})"
+                # Global Average Pooling - kernel size equals current spatial dimension
+                # Calculate RF properly using the formula: RFout = RFin + (k-1) * Jin
+                # For GAP, kernel_size = current_size
+                new_rf = current_rf + (current_size - 1) * current_jump
+                
+                # Display string shows it's global pooling with the actual feature map size
+                display_rf = f"GLOBAL({current_size}x{current_size})"
                 
                 if debug:
                     print(f"\n[DEBUG] {layer_name} (AdaptiveAvgPool2d - Global):")
                     print(f"  Nin={old_size}, Nout=1, k={old_size} (adaptive), s={old_size}, p=0")
                     print(f"  Jin={old_jump}, Jout=1 (global pooling)")
-                    print(f"  Rin={old_rf}, Rout=GLOBAL({old_size}x{old_size})")
+                    print(f"  Rin={old_rf}, Rout={new_rf}")
+                    print(f"  Formula: Rout = {old_rf} + ({old_size}-1)*{old_jump} = {new_rf}")
                     print(f"  Note: Global Average Pooling - each output sees entire {old_size}x{old_size} feature map")
-                    print(f"  Effective RF in original input space: {original_input_size}x{original_input_size}")
+                    if new_rf >= original_input_size:
+                        print(f"  RF exceeds input size ({new_rf} >= {original_input_size}) - complete coverage of {original_input_size}x{original_input_size} input")
                 
                 current_size = 1
-                # For subsequent layers, we'll track that RF is global
-                current_rf = original_input_size  # Use original input size as effective RF
-                current_jump = 1  # Jump doesn't matter after global pooling
-                return global_rf
+                current_rf = new_rf  # Use the correctly calculated RF
+                current_jump = 1  # Jump becomes 1 after global pooling
+                
+                # Return display string for table, but internally track the actual RF value
+                return display_rf
             else:
                 # For other adaptive pool sizes, calculate approximate RF
                 # This is a simplification - actual RF depends on input/output ratio
@@ -346,12 +353,14 @@ def calculate_functional_rf(operation_name, current_rf, current_jump, current_si
         return calculate_functional_rf('max_pool2d', current_rf, current_jump, current_size, **kwargs)
         
     elif operation_name == 'adaptive_avg_pool2d':
-        # FIXED: Handle adaptive pooling
+        # FIXED: Handle adaptive pooling with proper RF calculation
         output_size = kwargs.get('output_size', 1)
         
         if output_size == 1 or output_size == (1, 1):
-            # Global pooling - RF becomes the entire feature map
-            return 'GLOBAL', 1, 1
+            # Global pooling - calculate RF properly using the formula
+            # For GAP, kernel_size = current_size
+            new_rf = current_rf + (current_size - 1) * current_jump
+            return new_rf, 1, 1
         else:
             # For other sizes, approximate
             if isinstance(output_size, int):

@@ -28,7 +28,7 @@
 - Best Test Accuracy 99.2%  
 
 ### Analysis
-- Model with 6K parameters is able to reach till 99.2% accuracy in 15 epochs.
+- Model with 6M parameters is able to reach till 99.2% accuracy in 15 epochs.
 - Model is not overfitting as training and test accuracies are closeby.
 
 ## Solution, Step 2 [Notebook](./ERAV4_S6_v2.ipynb)
