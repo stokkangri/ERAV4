@@ -1,0 +1,45 @@
+# Configuration for full ImageNet training
+# Standard settings for training ResNet-50 on ImageNet-1k
+
+# Dataset
+data_dir: './data/imagenet'
+subset_percent: null  # Use full dataset
+tiny_imagenet: false
+batch_size: 256
+num_workers: 8
+augment_train: true
+
+# Model
+model: 'resnet50'
+num_classes: 1000
+pretrained: false
+replace_maxpool_with_conv: true  # Using Conv instead of MaxPool by default
+
+# Training
+epochs: 90
+optimizer: 'sgd'
+learning_rate: 0.1
+momentum: 0.9
+weight_decay: 0.0001
+
+# Scheduler
+scheduler: 'cosine'
+min_lr: 0.000001
+
+# Other training settings
+accumulation_steps: 1
+clip_grad_norm: null
+multi_gpu: true
+
+# Checkpointing
+save_interval: 5
+checkpoint_dir: './checkpoints/imagenet_full'
+log_dir: './logs/imagenet_full'
+plot_dir: './plots/imagenet_full'
+
+# LR Finder
+find_lr: false
+lr_finder_iterations: 200
+
+# Resume training
+resume: false

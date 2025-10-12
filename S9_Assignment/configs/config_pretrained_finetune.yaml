@@ -1,0 +1,45 @@
+# Configuration for fine-tuning pretrained ResNet-50
+# Uses pretrained weights and trains with lower learning rate
+
+# Dataset
+data_dir: './data/imagenet'
+subset_percent: 0.1  # Use 10% for fine-tuning demo
+tiny_imagenet: false
+batch_size: 128
+num_workers: 4
+augment_train: true
+
+# Model
+model: 'resnet50'
+num_classes: 1000
+pretrained: true  # Use pretrained weights
+replace_maxpool_with_conv: true  # Using Conv instead of MaxPool by default
+
+# Training
+epochs: 20
+optimizer: 'adamw'  # AdamW often works better for fine-tuning
+learning_rate: 0.001  # Lower LR for fine-tuning
+momentum: 0.9
+weight_decay: 0.01
+
+# Scheduler
+scheduler: 'cosine'
+min_lr: 0.00001
+
+# Other training settings
+accumulation_steps: 1
+clip_grad_norm: 1.0  # Gradient clipping for stability
+multi_gpu: true
+
+# Checkpointing
+save_interval: 5
+checkpoint_dir: './checkpoints/imagenet_finetune'
+log_dir: './logs/imagenet_finetune'
+plot_dir: './plots/imagenet_finetune'
+
+# LR Finder
+find_lr: true
+lr_finder_iterations: 100
+
+# Resume training
+resume: false

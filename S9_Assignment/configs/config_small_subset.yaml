@@ -1,0 +1,48 @@
+# Configuration for training on small ImageNet subset (1% of data)
+# Useful for quick experiments and testing
+
+# Dataset
+data_dir: './data/imagenet'
+subset_percent: 0.01  # Use 1% of ImageNet
+tiny_imagenet: false
+batch_size: 128
+num_workers: 4
+augment_train: true
+
+# Model
+model: 'resnet50'
+num_classes: 1000
+pretrained: false
+replace_maxpool_with_conv: true  # Using Conv instead of MaxPool by default
+
+# Training
+epochs: 10
+optimizer: 'sgd'
+learning_rate: 0.1
+momentum: 0.9
+weight_decay: 0.0001
+
+# Scheduler
+scheduler: 'onecycle'
+max_lr: 0.1
+pct_start: 0.3
+div_factor: 25.0
+final_div_factor: 10000.0
+
+# Other training settings
+accumulation_steps: 1
+clip_grad_norm: null
+multi_gpu: true
+
+# Checkpointing
+save_interval: 5
+checkpoint_dir: './checkpoints/imagenet_small'
+log_dir: './logs/imagenet_small'
+plot_dir: './plots/imagenet_small'
+
+# LR Finder
+find_lr: true
+lr_finder_iterations: 100
+
+# Resume training
+resume: false

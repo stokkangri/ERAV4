@@ -1,0 +1,48 @@
+# Configuration for Tiny ImageNet training
+# 200 classes, 64x64 images - good for quick experiments
+
+# Dataset
+data_dir: './data/tiny-imagenet-200'
+subset_percent: null  # Use full Tiny ImageNet
+tiny_imagenet: true
+batch_size: 256
+num_workers: 4
+augment_train: true
+
+# Model
+model: 'resnet50'
+num_classes: 200  # Tiny ImageNet has 200 classes
+pretrained: false
+replace_maxpool_with_conv: true  # Using Conv instead of MaxPool (better for smaller images)
+
+# Training
+epochs: 50
+optimizer: 'sgd'
+learning_rate: 0.1
+momentum: 0.9
+weight_decay: 0.0001
+
+# Scheduler
+scheduler: 'onecycle'
+max_lr: 0.1
+pct_start: 0.3
+div_factor: 25.0
+final_div_factor: 10000.0
+
+# Other training settings
+accumulation_steps: 1
+clip_grad_norm: null
+multi_gpu: false  # Usually not needed for Tiny ImageNet
+
+# Checkpointing
+save_interval: 10
+checkpoint_dir: './checkpoints/tiny_imagenet'
+log_dir: './logs/tiny_imagenet'
+plot_dir: './plots/tiny_imagenet'
+
+# LR Finder
+find_lr: true
+lr_finder_iterations: 100
+
+# Resume training
+resume: false
