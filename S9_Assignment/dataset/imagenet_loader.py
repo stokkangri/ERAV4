@@ -1,5 +1,5 @@
 """
-ImageNet Dataset Loader with support for full dataset and small subsets
+Improved ImageNet Dataset Loader with stronger augmentations to prevent overfitting
 """
 
 import os
@@ -17,7 +17,7 @@ import json
 
 class ImageNetDataLoader:
     """
-    ImageNet dataset loader with augmentation and subset support
+    ImageNet dataset loader with enhanced augmentation and subset support
     """
     
     def __init__(
@@ -32,10 +32,11 @@ class ImageNetDataLoader:
         subset_classes: Optional[int] = None,
         distributed: bool = False,
         image_size: int = 224,
-        crop_pct: float = 0.875
+        crop_pct: float = 0.875,
+        augmentation_strength: str = 'strong'  # 'basic', 'medium', 'strong'
     ):
         """
-        Initialize ImageNet data loader
+        Initialize ImageNet data loader with enhanced augmentation options
         
         Args:
             data_dir: Directory containing ImageNet data (train/val folders)
@@ -49,6 +50,7 @@ class ImageNetDataLoader:
             distributed: Whether to use distributed training
             image_size: Target image size
             crop_pct: Center crop percentage for validation
+            augmentation_strength: Level of augmentation ('basic', 'medium', 'strong')
         """
         self.data_dir = Path(data_dir)
         self.batch_size = batch_size
@@ -61,6 +63,7 @@ class ImageNetDataLoader:
         self.distributed = distributed
         self.image_size = image_size
         self.crop_pct = crop_pct
+        self.augmentation_strength = augmentation_strength
         
         # ImageNet statistics
         self.mean = [0.485, 0.456, 0.406]
@@ -97,23 +100,46 @@ class ImageNetDataLoader:
             return [f"class_{i}" for i in range(1000)]
     
     def _get_train_transforms(self) -> transforms.Compose:
-        """Get training data transformations"""
+        """Get training data transformations with different augmentation levels"""
         transform_list = []
         
         if self.augment_train:
-            transform_list.extend([
-                transforms.RandomResizedCrop(self.image_size),
-                transforms.RandomHorizontalFlip(),
-                # Optional: Add more augmentations
-                # transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
-                # transforms.RandomGrayscale(p=0.2),
-            ])
+            if self.augmentation_strength == 'basic':
+                # Basic augmentations
+                transform_list.extend([
+                    transforms.RandomResizedCrop(self.image_size),
+                    transforms.RandomHorizontalFlip(),
+                ])
+            
+            elif self.augmentation_strength == 'medium':
+                # Medium augmentations
+                transform_list.extend([
+                    transforms.RandomResizedCrop(self.image_size, scale=(0.08, 1.0)),
+                    transforms.RandomHorizontalFlip(),
+                    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),
+                ])
+            
+            elif self.augmentation_strength == 'strong':
+                # Strong augmentations to prevent overfitting
+                transform_list.extend([
+                    transforms.RandomResizedCrop(self.image_size, scale=(0.08, 1.0), ratio=(0.75, 1.33)),
+                    transforms.RandomHorizontalFlip(p=0.5),
+                    transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.2),
+                    transforms.RandomGrayscale(p=0.2),
+                    transforms.RandomApply([
+                        transforms.GaussianBlur(kernel_size=23, sigma=(0.1, 2.0))
+                    ], p=0.5),
+                ])
+                
+                # Add RandAugment for even stronger augmentation
+                transform_list.append(transforms.RandAugment(num_ops=2, magnitude=9))
         else:
             transform_list.extend([
                 transforms.Resize(int(self.image_size / self.crop_pct)),
                 transforms.CenterCrop(self.image_size),
             ])
         
+        # Add RandomErasing after ToTensor for additional regularization
         transform_list.append(transforms.ToTensor())
         
         if self.normalize:
@@ -121,10 +147,11 @@ class ImageNetDataLoader:
                 transforms.Normalize(mean=self.mean, std=self.std)
             )
         
-        # Add AutoAugment or RandAugment for better performance
-        if self.augment_train:
-            # Insert before ToTensor
-            transform_list.insert(-2, transforms.AutoAugment(transforms.AutoAugmentPolicy.IMAGENET))
+        # Add RandomErasing for strong augmentation
+        if self.augment_train and self.augmentation_strength == 'strong':
+            transform_list.append(
+                transforms.RandomErasing(p=0.25, scale=(0.02, 0.33), ratio=(0.3, 3.3))
+            )
         
         return transforms.Compose(transform_list)
     
@@ -258,9 +285,9 @@ class ImageNetDataLoader:
             'batch_size': self.batch_size,
             'image_size': (3, self.image_size, self.image_size),
             'mean': self.mean,
-            'std': self.std
+            'std': self.std,
+            'augmentation_strength': self.augmentation_strength if self.augment_train else 'none'
         }
-
 
 class TinyImageNetDataLoader(ImageNetDataLoader):
     """
@@ -298,17 +325,17 @@ class TinyImageNetDataLoader(ImageNetDataLoader):
         self.mean = [0.4802, 0.4481, 0.3975]
         self.std = [0.2302, 0.2265, 0.2262]
 
-
 def create_imagenet_loaders(
     data_dir: str,
     batch_size: int = 256,
     num_workers: int = 8,
     subset_percent: Optional[float] = None,
     tiny_imagenet: bool = False,
+    augmentation_strength: str = 'strong',
     **kwargs
 ) -> Tuple[DataLoader, DataLoader, Dict]:
     """
-    Convenience function to create ImageNet data loaders
+    Convenience function to create ImageNet data loaders with enhanced augmentation
     
     Args:
         data_dir: Data directory
@@ -316,6 +343,7 @@ def create_imagenet_loaders(
         num_workers: Number of workers
         subset_percent: If specified, use this percentage of data (0-1)
         tiny_imagenet: Use Tiny ImageNet instead of full ImageNet
+        augmentation_strength: Level of augmentation ('basic', 'medium', 'strong')
         **kwargs: Additional arguments
     
     Returns:
@@ -337,27 +365,19 @@ def create_imagenet_loaders(
         if subset_percent < 0.1:
             kwargs['subset_classes'] = int(total_classes * subset_percent * 10)
     
-    # Create appropriate loader
-    if tiny_imagenet:
-        loader = TinyImageNetDataLoader(
-            data_dir=data_dir,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            **kwargs
-        )
-    else:
-        loader = ImageNetDataLoader(
-            data_dir=data_dir,
-            batch_size=batch_size,
-            num_workers=num_workers,
-            **kwargs
-        )
+    # Create loader with specified augmentation strength
+    loader = ImageNetDataLoader(
+        data_dir=data_dir,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        augmentation_strength=augmentation_strength,
+        **kwargs
+    )
     
     train_loader, val_loader = loader.get_loaders()
     stats = loader.get_dataset_stats()
     
     return train_loader, val_loader, stats
-
 
 if __name__ == "__main__":
     # Test the data loader
@@ -389,3 +409,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Error: {e}")
         print("Please ensure ImageNet dataset is downloaded and extracted properly.")
+
