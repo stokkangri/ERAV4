@@ -1,0 +1,31 @@
+# PyTorch and related packages
+torch>=2.0.0
+torchvision>=0.15.0
+tensorboard>=2.13.0
+
+# Learning rate finder
+torch-lr-finder>=0.2.1
+
+# Scientific computing
+numpy>=1.24.0
+scipy>=1.10.0
+pandas>=2.0.0
+
+# Plotting
+matplotlib>=3.7.0
+
+# Optional but recommended for better performance
+# Uncomment if you want to use mixed precision training
+# torch-optimizer>=0.3.0
+# apex  # NVIDIA Apex for mixed precision (optional)
+
+# For CUDA support (install appropriate version for your CUDA)
+# torch==2.0.1+cu118  # Example for CUDA 11.8
+# torchvision==0.15.2+cu118
+
+# Note: For GPU support, install PyTorch with CUDA support:
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+# Replace cu118 with your CUDA version (e.g., cu117, cu121)
+
+# For CPU only:
+# pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
